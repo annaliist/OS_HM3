@@ -26,15 +26,13 @@ def color_picker(protsess):
 def joonista(jarjend):
     #print(jarjend)
     puhasta()
-    eelmise_loppx = 110
-    nr_x = 118
-    y_koordinaat = 60
-    y_koordinaat2 = 80
+    eelmise_loppx = 82
+    nr_x = 90
+    y_koordinaat = 40
+    y_koordinaat2 = 60
     kaugus = 0
     for i in range(len(jarjend)):
-        print("I:" + str(i))
-        for j in range(50):
-            print("J:" + str(j))
+        for j in range(48):
             protsess = jarjend[i][j]
             kestus = 1
             kujund = tahvel.create_rectangle(eelmise_loppx, y_koordinaat, eelmise_loppx + kestus * 16,y_koordinaat2, fill=color_picker(protsess))
@@ -42,23 +40,19 @@ def joonista(jarjend):
             protsessi_id = tahvel.create_text(keskpaik, y_koordinaat+10, text=protsess)
 
             if i == 0:
-                nr = tahvel.create_text(nr_x, 50, text=str(kaugus)) # 0-49
+                nr = tahvel.create_text(nr_x, 30, text=str(j+1)) # 0-49
+
             kaugus += kestus
             eelmise_loppx += kestus*16
             nr_x += kestus*16
 
             # etapi nr ja lisatud protsessid
-            etapp = tahvel.create_text(15, y_koordinaat+10, text=str(i + 1))
-            try:
-                protsess = tahvel.create_text(70, y_koordinaat+10, text=alphabet[i] + " : " + str(massiiviMeister()[i]))
-            except:
-                protsess = tahvel.create_text(70, y_koordinaat+10, text="-") 
+            etapp = tahvel.create_text(60, y_koordinaat+10, text=str(i + 1))
+        sammu_silt = tahvel.create_text(30, y_koordinaat+10, text="Samm", font='Helvetica 9 bold') 
 
         y_koordinaat += 20
         y_koordinaat2 += 20
-        eelmise_loppx = 110
-    etapi_silt = tahvel.create_text(20, 50, text="Etapp", font='Helvetica 9 bold')
-    protsessi_silt = tahvel.create_text(70, 50, text="Protsess", font='Helvetica 9 bold')
+        eelmise_loppx = 82
 
 # teeb järjendist kahetasemelise listi, mida on mugavam töödelda
 def massiiviks(input_jarjend):
@@ -66,9 +60,19 @@ def massiiviks(input_jarjend):
     jupid = input_jarjend.split(";")
     for i in range(len(jupid)):
         hakkliha = jupid[i].split(",")
-        saabumine = int(hakkliha[0])
-        kestus = int(hakkliha[1])
-        valjund.append([saabumine, kestus])
+        saabumine = hakkliha[0]
+        kestus = hakkliha[1]
+
+        if len(kestus) > 1:
+            if "+" not in kestus:
+                valjund.append([saabumine, int(kestus)])
+            else:
+                valjund.append([saabumine, kestus[0], int(kestus)]) # [A, +, 3] - suurenda 3 ploki võrra
+        else:
+            try:
+                valjund.append([saabumine, int(kestus)]) # [A, 2] - loo fail
+            except:
+                valjund.append([saabumine, 0]) # [A, 0] - kustuta fail
     return valjund
 
 # otsustab, millist järjendit teha kahetasemeliseks massiiviks
@@ -102,7 +106,7 @@ def jooksuta_algoritmi():
     massiiviTeavitaja([valjund[1], valjund[2]])
     joonista(valjund[0])
 
-predef1 = "A,2;B,3;A,-;C,4;B,+3;D,5;E,15;C,-;F,55"
+predef1 = "A,2;B,3;A,-;C,4;B,+300;D,5;E,15;C,-;F,55"
 predef2 = "A,4;B,3;C,6;D,5;C,+2;B,-;E,5;A,-;F,10"
 predef3 = "A,2;B,3;C,4;D,5;B,-;E,7;D,-;E,+3;F,10"
 
@@ -151,7 +155,7 @@ kaivita_nupp.place(x=10, y=190,height=25, width=80)
 puhasta_nupp = ttk.Button(raam, text="Puhasta väljund", command = lambda : puhasta() )
 puhasta_nupp.place(x=500, y=190,height=25, width=130)
 
-text = Text(raam, width=25, height=9)
+text = Text(raam, width=58, height=9)
 text.place(x=450, y=30)
 
 raam.mainloop()
